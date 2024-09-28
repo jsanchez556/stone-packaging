@@ -149,4 +149,37 @@ Run the verifier to confirm the proof:
 cpu_air_verifier --in_file=fibonacci_proof.json && echo "Successfully verified example proof."
 ```
 
+## Docker Image Publishing
+
+This repository contains a GitHub Actions workflow that automatically builds and publishes Docker images to Docker Hub.
+
+- **Workflow file:** `.github/workflows/docker-publish.yml`
+
+### Usage
+
+1. Set up the following GitHub repository secrets under **Settings** > **Secrets and variables** > **Actions**:
+   - `DOCKER_LOGIN`: Your Docker Hub username.
+   - `DOCKERHUB_TOKEN`: Your Docker Hub access token.
+2. The workflow is triggered by any push or pull request to the `master` branch. It builds the Docker image and publishes it to Docker Hub.
+
+### Workflow Overview
+
+The workflow performs the following actions:
+- Checks out the repository code.
+- Sets up Docker Buildx for cross-platform builds.
+- Logs in to Docker Hub using the credentials stored in GitHub Secrets.
+- Builds the Docker image based on the repository content.
+- Pushes the image to Docker Hub with the specified tag.
+- Generates an attestation for the image artifact (not applicable to forked repositories).
+- Logs out of Docker Hub after the process is complete.
+
+### Tests
+
+1. Forked the original repository.
+2. To use the local Docker Hub, update the workflow file by setting `env.DOCKER_HUB` to `127.0.0.1:5000`.
+3. Temporarily updated the workflow trigger branch for testing purposes.
+4. Pushed a small change to trigger the workflow.
+5. Monitored the workflow in the **Actions** tab.
+6. Verified the Docker image was pushed to local Docker Hub.
+
 This project is supported by Nethermind and Starknet Foundation via [OnlyDust platform](https://app.onlydust.com/p/stone-packaging-)
