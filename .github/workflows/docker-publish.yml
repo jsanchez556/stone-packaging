@@ -2,18 +2,14 @@ name: Build and Publish image to Docker Hub
 on:
     push:
       branches:
-        - 'master'
+        - 'dockerhub'
       tags:
         - 'v*.*.*'
-    pull_request:
-      branches:
-        - 'master'
 
 jobs:
   build_and_push:
     env:
       DOCKER_HUB: ${{ secrets.DOCKER_LOGIN }}
-      DOCKER_IMAGE_BASE: ${{ github.event.repository.name }}
     runs-on: ubuntu-22.04
     permissions:
       id-token: write
@@ -49,8 +45,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKER_HUB }}/${{ env.DOCKER_IMAGE_BASE }}
-          tags: ${{ matrix.target.name }}:latest
+          images: ${{ env.DOCKER_HUB }}/${{ matrix.target.name }}
+          tags: |
+            type=ref,event=branch,branch=master,latest=true
+            type=ref,event=tag
 
       - name: Build And Push Image
         id: push
@@ -66,7 +64,7 @@ jobs:
         if: github.event.repository.fork == false
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ secrets.DOCKER_LOGIN }}/${{ env.DOCKER_IMAGE_BASE }}
+          subject-name: ${{ secrets.DOCKER_LOGIN }}/${{ matrix.target.name }}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
