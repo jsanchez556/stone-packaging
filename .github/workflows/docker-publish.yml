@@ -76,7 +76,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
-        if: github.event.repository.fork == false
         uses: actions/attest-build-provenance@v1
         with:
           subject-name: ${{ secrets.DOCKER_LOGIN }}/${{ matrix.target.name }}
